@@ -119,7 +119,8 @@ def run_afl_fuzz(input_corpus,
         command.append('-d')
     if additional_flags:
         command.extend(additional_flags)
-    command.append('-s')
+    # splicing mutations are disabled because this appears to be not supported
+    # command.append('-s')
     command.append('-p')
     command.append('-L0')
     dictionary_path = utils.get_dictionary_path(target_binary)
