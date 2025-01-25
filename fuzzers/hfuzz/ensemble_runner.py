@@ -52,9 +52,9 @@ HFUZZ2_FUZZ_BIN_NAME = "./hfuzz2_4.30c_hybrid_start"
 # Timeout strategies (in seconds)
 TMOUT_CMPLOG = 60 * 60    # 90 minutes
 TIMEOUT_HFUZZ3 = 60 * 60 
-TMOUT_HFUZZ1 = 8 * 60 * 60      # 120 minutes
+TMOUT_HFUZZ1 = 4 * 60 * 60      # 120 minutes
 TMOUT_HFUZZ2 = 60 * 60   # 120 minutes
-TIMEOUT_LIBAFL = 60 * 60       # 1 minute
+TIMEOUT_LIBAFL = 4 * 60 * 60       # 1 minute
 
 
 def time_s():
@@ -445,14 +445,8 @@ class HFuzz2Fuzzer(AFLFuzzer):
     def build_command(self):
         """Build the command for running the HFuzz2 fuzzer."""
         if self.cmplog_target_binary:
-            # 如果有 cmplog_target_binary，则像 cmplog 一样加上 -c 参数
-            self.command = [
-                HFUZZ2_FUZZ_BIN_NAME,
-                '-c',
-                self.cmplog_target_binary
-            ]
+            self.command = [HFUZZ2_FUZZ_BIN_NAME]
         else:
-            # 否则普通运行
             self.command = [HFUZZ2_FUZZ_BIN_NAME]
         self.add_common_args()
 
