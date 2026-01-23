@@ -43,9 +43,9 @@ RUN git clone -b dev https://github.com/AFLplusplus/AFLplusplus /afl && \
 RUN cd /afl && \
     unset CFLAGS CXXFLAGS && \
     export CC=clang AFL_NO_X86=1 && \
-    PYTHON_INCLUDE=/ make && \
-    cp utils/aflpp_driver/libAFLDriver.a /
+    PYTHON_INCLUDE=/ make
 
-RUN wget https://mh-sec.de/data/afl5.tar.gz && \
-    cd /afl && tar xzf ../afl5.tar.gz && make && make install
+RUN cd / && echo X && wget --no-check-certificate https://mh-sec.de/data/afl5.tar.gz && \
+    cd /afl && ls -l /afl5* && tar xzf ../afl5.tar.gz && make && make install && \
+    cp afl-fuzz.o /
 

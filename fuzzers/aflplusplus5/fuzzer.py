@@ -57,43 +57,14 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
         if 'gcc' not in build_modes:
             build_modes[0] = 'native'
 
-    # Instrumentation coverage modes:
-    if 'lto' in build_modes:
-        os.environ['CC'] = '/afl/afl-clang-lto'
-        os.environ['CXX'] = '/afl/afl-clang-lto++'
-        edge_file = build_directory + '/aflpp_edges.txt'
-        os.environ['AFL_LLVM_DOCUMENT_IDS'] = edge_file
-        if os.path.isfile('/usr/local/bin/llvm-ranlib-13'):
-            os.environ['RANLIB'] = 'llvm-ranlib-13'
-            os.environ['AR'] = 'llvm-ar-13'
-            os.environ['AS'] = 'llvm-as-13'
-        elif os.path.isfile('/usr/local/bin/llvm-ranlib-12'):
-            os.environ['RANLIB'] = 'llvm-ranlib-12'
-            os.environ['AR'] = 'llvm-ar-12'
-            os.environ['AS'] = 'llvm-as-12'
-        else:
-            os.environ['RANLIB'] = 'llvm-ranlib'
-            os.environ['AR'] = 'llvm-ar'
-            os.environ['AS'] = 'llvm-as'
-    elif 'qemu' in build_modes:
-        os.environ['CC'] = 'clang'
-        os.environ['CXX'] = 'clang++'
-    elif 'gcc' in build_modes:
-        os.environ['CC'] = 'afl-gcc-fast'
-        os.environ['CXX'] = 'afl-g++-fast'
-        if build_flags.find('array-bounds') != -1:
-            os.environ['CFLAGS'] = '-fsanitize=address -O1'
-            os.environ['CXXFLAGS'] = '-fsanitize=address -O1'
-        else:
-            os.environ['CFLAGS'] = ''
-            os.environ['CXXFLAGS'] = ''
-            os.environ['CPPFLAGS'] = ''
-    else:
-        os.environ['CC'] = '/afl/afl-clang-fast'
-        os.environ['CXX'] = '/afl/afl-clang-fast++'
+    os.environ['CC'] = '/afl/afl-cc'
+    os.environ['CXX'] = '/afl/afl-c++'
 
     print('AFL++ build: ')
     print(build_modes)
+
+    os.environ['CFLAGS'] += ' -lm -lrt'
+    os.environ['CXXFLAGS'] += ' -lm -lrt'
 
     if 'qemu' in build_modes or 'symcc' in build_modes:
         os.environ['CFLAGS'] = ' '.join(utils.NO_SANITIZER_COMPAT_CFLAGS)
@@ -159,7 +130,7 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     if 'eclipser' in build_modes:
         os.environ['FUZZER_LIB'] = '/libStandaloneFuzzTarget.a'
     else:
-        os.environ['FUZZER_LIB'] = '/libAFLDriver.a'
+        os.environ['FUZZER_LIB'] = '/afl-fuzz.o'
 
     # Some benchmarks like lcms. (see:
     # https://github.com/mm2/Little-CMS/commit/ab1093539b4287c233aca6a3cf53b234faceb792#diff-f0e6d05e72548974e852e8e55dffc4ccR212)
@@ -226,7 +197,7 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
         print('Re-building benchmark for symcc fuzzing target')
         utils.build_benchmark(env=new_env)
 
-    shutil.copy('/afl/afl-fuzz', build_directory)
+    #shutil.copy('/afl/afl-fuzz', build_directory)
     if os.path.exists('/afl/afl-qemu-trace'):
         shutil.copy('/afl/afl-qemu-trace', build_directory)
     if os.path.exists('/aflpp_qemu_driver_hook.so'):
@@ -234,6 +205,10 @@ def build(*args):  # pylint: disable=too-many-branches,too-many-statements
     if os.path.exists('/get_frida_entry.sh'):
         shutil.copy('/afl/afl-frida-trace.so', build_directory)
         shutil.copy('/get_frida_entry.sh', build_directory)
+
+
+def prepare_fuzz_environment(input_corpus):
+    utils.create_seed_file_for_empty_corpus(input_corpus)
 
 
 # pylint: disable=too-many-arguments
@@ -252,7 +227,7 @@ def fuzz(input_corpus,
     cmplog_target_binary = os.path.join(cmplog_target_binary_directory,
                                         target_binary_name)
 
-    afl_fuzzer.prepare_fuzz_environment(input_corpus)
+    prepare_fuzz_environment(input_corpus)
     # decomment this to enable libdislocator.
     # os.environ['AFL_ALIGNED_ALLOC'] = '1' # align malloc to max_align_t
     # os.environ['AFL_PRELOAD'] = '/afl/libdislocator.so'
