@@ -272,7 +272,7 @@ def fuzz(input_corpus,
     os.environ['AFL_NO_SYNC'] = '1'
     os.environ['AFL_FRAMESHIFT_ENABLED'] = '1'
     os.environ['AFL_FRAMESHIFT'] = '1'
-    os.environ['AFL_FRAMESHIFT_MAX_OVERHEAD'] = '0.1'
+    os.environ['AFL_FRAMESHIFT_MAX_OVERHEAD'] = '0.3'
 
     if not skip:
         os.environ['AFL_DISABLE_TRIM'] = '1'
