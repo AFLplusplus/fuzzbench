@@ -45,7 +45,7 @@ RUN cd /afl && \
     export CC=clang AFL_NO_X86=1 && \
     PYTHON_INCLUDE=/ make
 
-RUN cd / && echo X && wget --no-check-certificate https://mh-sec.de/data/afl5.tar.gz && \
+RUN cd / && echo Y && wget --no-check-certificate https://mh-sec.de/data/afl5.tar.gz && \
     cd /afl && ls -l /afl5* && tar xzf ../afl5.tar.gz && make && make install && \
     cp afl-fuzz.o /
 
