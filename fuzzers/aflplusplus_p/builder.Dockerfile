@@ -31,17 +31,22 @@ RUN apt-get update && \
         libgtk-3-dev \
         # for QEMU mode
         ninja-build \
+        wget lsb-release \
         gcc-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-plugin-dev \
         libstdc++-$(gcc --version|head -n1|sed 's/\..*//'|sed 's/.* //')-dev
 
 # Download afl++.
 RUN git clone -b dev https://github.com/AFLplusplus/AFLplusplus /afl && \
     cd /afl && \
-    git checkout 2977cbd2400327b78e753682377289e783f42d50
+    git checkout a0034427a0db444685e185b9d5d2ba24c8795b59
+
+RUN apt-get install -y software-properties-common gnupg
+
+RUN wget https://apt.llvm.org/llvm.sh && chmod +x llvm.sh && ./llvm.sh 21
 
 # Build without Python support as we don't need it.
 RUN cd /afl && \
     unset CFLAGS CXXFLAGS && \
-    export CC=clang AFL_NO_X86=1 && \
+    export CC=clang-21 CXX=clang++-21 LLVM_CONFIG=llvm-config-21 AFL_NO_X86=1 && \
     PYTHON_INCLUDE=/ make && \
     cp utils/aflpp_driver/libAFLDriver.a /
