@@ -115,9 +115,8 @@ main() {
   tar -xJf "${tarball}" -C "${workdir}"
 
   log "Configuring build under ${PREFIX}."
-echo tarball=$tarball workdir=$workdir src_dir=$src_dir PREFIX=$PREFIX
+  echo tarball=$tarball workdir=$workdir src_dir=$src_dir PREFIX=$PREFIX
   cd "${src_dir}"
-read X
   ./configure --prefix="${PREFIX}" --with-ensurepip=install
 
   log "Building Python ${TARGET_VERSION} with ${BUILD_JOBS} parallel job(s)."
