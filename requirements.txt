@@ -26,7 +26,7 @@ sqlalchemy==1.4.41
 protobuf==3.20.3
 
 # Hotfix
-setuptools==81
+setuptools==80
 
 # Needed for development.
 pylint==2.15.4
